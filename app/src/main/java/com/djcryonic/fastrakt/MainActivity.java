@@ -1,5 +1,6 @@
 package com.djcryonic.fastrakt;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -23,12 +24,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
+		final Context context = this;
+
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new TraktInteractions().attempt();
-
+				new TraktInteractions().attempt(context);
 				Snackbar.make(view, "Did the thing.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 			}
 		});
