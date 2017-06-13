@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -39,13 +38,7 @@ void attempt() {
 
 			final String line = reader.readLine();
 
-			if (line != null) {
-				JsonObject jsonObject = (new JsonParser().parse(line)).getAsJsonObject();
-
-				for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					checkType(entry);
-				}
-			}
+			if (line != null) readElement(new JsonParser().parse(line));
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
@@ -53,21 +46,20 @@ void attempt() {
 		return "idk";
 	}
 
-	private void checkType(Map.Entry<String, JsonElement> entry) {
-		if (entry.getValue().isJsonPrimitive()) {
-			checkPrimitiveType(entry.getKey(), entry.getValue());
-		} else if (entry.getValue().isJsonObject()) {
-			final JsonObject internalObject = entry.getValue().getAsJsonObject();
-
-			checkType(internalObject.as);
-		} else if (entry.getValue().isJsonArray()) {
-			for (JsonElement element : entry.getValue().getAsJsonArray()) {
-				checkPrimitiveType(entry.getKey(), element);
-			}
-		}
+	private void readElement(JsonElement element) {
+		if (element.isJsonObject())
+			for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
+				checkType(entry);
+		else if (element.isJsonArray())
+			for (JsonElement innerElement : element.getAsJsonArray()) readElement(innerElement);
 	}
 
-	// TODO This will check the primitive type of each element.
+	private void checkType(Map.Entry<String, JsonElement> entry) {
+		if (entry.getValue().isJsonPrimitive()) checkPrimitiveType(entry.getKey(), entry.getValue());
+		else if (entry.getValue().isJsonObject()) readElement(entry.getValue());
+		else if (entry.getValue().isJsonArray()) readElement(entry.getValue());
+	}
+
 	private void checkPrimitiveType(final String key, JsonElement element) {
 		if (element.getAsJsonPrimitive().isBoolean()) {
 			Log.v(key, String.valueOf(element.getAsBoolean()));
