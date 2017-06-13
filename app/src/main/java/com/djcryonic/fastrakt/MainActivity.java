@@ -13,16 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -50,52 +40,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
-	}
-
-	private StringBuffer request(String urlString) {
-		// TODO Auto-generated method stub
-
-		StringBuffer buffer = new StringBuffer("");
-		try {
-			URL url = new URL(urlString);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent", "");
-			connection.setRequestMethod("POST");
-			connection.setDoInput(true);
-			connection.connect();
-
-			InputStream inputStream = connection.getInputStream();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-			}
-		} catch (IOException e) {
-			// Writing exception to log
-			e.printStackTrace();
-		}
-		return buffer;
-	}
-
-	public static String convertStreamToString(InputStream inputStream) throws IOException {
-		if (inputStream != null) {
-			Writer writer = new StringWriter();
-
-			char[] buffer = new char[1024];
-			try {
-				Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 1024);
-				int n;
-				while ((n = reader.read(buffer)) != -1) {
-					writer.write(buffer, 0, n);
-				}
-			} finally {
-				inputStream.close();
-			}
-			return writer.toString();
-		} else {
-			return "";
-		}
 	}
 
 	@Override
