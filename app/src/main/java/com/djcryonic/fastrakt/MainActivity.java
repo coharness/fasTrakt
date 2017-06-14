@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -25,12 +26,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		setSupportActionBar(toolbar);
 
 		final Context context = this;
+		final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new TraktInteractions().attempt(context);
+				new TraktInteractions().attempt(linearLayout, context);
 				Snackbar.make(view, "Did the thing.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 			}
 		});
