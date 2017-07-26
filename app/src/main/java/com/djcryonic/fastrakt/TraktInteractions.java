@@ -22,15 +22,19 @@ import java.util.Map;
 
 class TraktInteractions extends AsyncTask<String, Void, ArrayList<String>> {
 
+	private final static String BASE_PATH = "https://api.trakt.tv/users/guardian1691";
+
 	private Context context;
 	private LinearLayout linearLayout;
 
-void attempt(LinearLayout linearLayout, Context context) {
-	this.context = context;
-	this.linearLayout = linearLayout;
+	void attempt(LinearLayout linearLayout, Context context, String action) {
+		this.context = context;
+		this.linearLayout = linearLayout;
 
-	execute("https://api.trakt.tv/users/guardian1691");
-}
+		this.linearLayout.removeAllViews();
+
+		execute(String.format("%s/%s", BASE_PATH, action));
+	}
 
 	@Override
 	protected ArrayList<String> doInBackground(String... params) {
@@ -103,13 +107,10 @@ void attempt(LinearLayout linearLayout, Context context) {
 
 		if (element.getAsJsonPrimitive().isBoolean()) {
 			string = String.format("\"%s\" : %b", key, element.getAsBoolean());
-			//			Log.v(key, String.valueOf(element.getAsBoolean()));
 		} else if (element.getAsJsonPrimitive().isNumber()) {
 			string = String.format("\"%s\" : %s", key, element.getAsNumber().toString());
-			//			Log.v(key, String.valueOf(element.getAsNumber()));
 		} else if (element.getAsJsonPrimitive().isString()) {
 			string = String.format("\"%s\" : \"%s\"", key, element.getAsString());
-			//			Log.v(key, element.getAsString());
 		}
 
 		return string;
