@@ -10,7 +10,7 @@ abstract class StandardMediaObject {
 
 	private String title;
 	private int year;
-	private int id; // TODO Make a class for ids
+	private ID id;
 
 	StandardMediaObject(JsonElement element) {
 //		Map.Entry<String, JsonElement> entry = element.getAsJsonObject().entrySet();
