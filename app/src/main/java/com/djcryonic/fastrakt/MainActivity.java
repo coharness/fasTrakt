@@ -2,6 +2,7 @@ package com.djcryonic.fastrakt;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -13,9 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+	private LinearLayout linearLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,19 +28,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		setSupportActionBar(toolbar);
 
 		final Context context = this;
+		linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new TraktInteractions().attempt(context);
+				new TraktInteractions().attempt(linearLayout, context, "");
 				Snackbar.make(view, "Did the thing.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 			}
 		});
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-		drawer.setDrawerListener(toggle);
+		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
-	public boolean onNavigationItemSelected(MenuItem item) {
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
 
@@ -90,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		} else if (id == R.id.nav_manage) {
 
-		} else if (id == R.id.nav_share) {
-
-		} else if (id == R.id.nav_send) {
-
+		} else if (id == R.id.nav_movies) {
+			new TraktInteractions().attempt(linearLayout, this, "watched/tv");
+		} else if (id == R.id.nav_tv) {
+			new TraktInteractions().attempt(linearLayout, this, "watched/movies");
 		}
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

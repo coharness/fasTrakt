@@ -2,7 +2,7 @@ package com.djcryonic.fastrakt;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -19,14 +20,26 @@ import java.util.Map;
  * Handles calls to the Trakt API.
  */
 
-class TraktInteractions extends AsyncTask<String, Void, String> {
+class TraktInteractions extends AsyncTask<String, Void, ArrayList<String>> {
 
-TextView[] attempt(Context context) {
-	execute("https://api.trakt.tv/users/guardian1691");
-}
+	private final static String BASE_PATH = "https://api.trakt.tv/users/guardian1691";
+
+	private Context context;
+	private LinearLayout linearLayout;
+
+	void attempt(LinearLayout linearLayout, Context context, String action) {
+		this.context = context;
+		this.linearLayout = linearLayout;
+
+		this.linearLayout.removeAllViews();
+
+		execute(String.format("%s/%s", BASE_PATH, action));
+	}
 
 	@Override
-	protected String doInBackground(String... params) {
+	protected ArrayList<String> doInBackground(String... params) {
+		ArrayList<String> strings = new ArrayList<>();
+
 		try {
 			URL url = new URL(params[0]);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -40,49 +53,66 @@ TextView[] attempt(Context context) {
 
 			final String line = reader.readLine();
 
-			if (line != null) readElement(new JsonParser().parse(line));
+			if (line != null) strings = readElement(new JsonParser().parse(line));
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
 
-		return "idk";
+		return strings;
 	}
 
-	private String readElement(JsonElement element) {
-		if (element.isJsonObject()) {
-			String string = "";
+	@Override
+	protected void onPostExecute(ArrayList<String> strings) {
+		super.onPostExecute(strings);
 
+		for (String string : strings) {
+			TextView textView = new TextView(context);
+			textView.setText(string);
+
+			linearLayout.addView(textView);
+		}
+	}
+
+	private ArrayList<String> readElement(JsonElement element) {
+		ArrayList<String> strings = new ArrayList<>();
+
+		if (element.isJsonObject()) {
 			for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
-				string = String.format("%s\n%s", string, checkType(entry));
+				strings.add(String.format("%s\n%s", entry.getKey(), checkType(entry)));
 			}
 		} else if (element.isJsonArray())
 			for (JsonElement innerElement : element.getAsJsonArray()) {
-				readElement(innerElement);
+				strings.addAll(readElement(innerElement));
 			}
+
+		return strings;
 	}
 
-	private String checkType(Map.Entry<String, JsonElement> entry) {
+	private ArrayList<String> checkType(Map.Entry<String, JsonElement> entry) {
+		ArrayList<String> strings = new ArrayList<>();
+
 		if (entry.getValue().isJsonPrimitive()) {
-			checkPrimitiveType(entry.getKey(), entry.getValue());
+			strings.add(checkPrimitiveType(entry.getKey(), entry.getValue()));
 		} else if (entry.getValue().isJsonObject()) {
-			readElement(entry.getValue());
+			strings.addAll(readElement(entry.getValue()));
 		} else if (entry.getValue().isJsonArray()) {
-			readElement(entry.getValue());
+			strings.addAll(readElement(entry.getValue()));
 		}
+
+		return strings;
 	}
 
 	private String checkPrimitiveType(final String key, JsonElement element) {
+		String string = "";
+
 		if (element.getAsJsonPrimitive().isBoolean()) {
-			return String.format("\"%s\" : %b", key, element.getAsBoolean());
-//			Log.v(key, String.valueOf(element.getAsBoolean()));
+			string = String.format("\"%s\" : %b", key, element.getAsBoolean());
 		} else if (element.getAsJsonPrimitive().isNumber()) {
-			return String.format("\"%s\" : %s", key, element.getAsNumber().toString());
-//			Log.v(key, String.valueOf(element.getAsNumber()));
+			string = String.format("\"%s\" : %s", key, element.getAsNumber().toString());
 		} else if (element.getAsJsonPrimitive().isString()) {
-			return String.format("\"%s\" : \"%s\"", key, element.getAsString());
-//			Log.v(key, element.getAsString());
+			string = String.format("\"%s\" : \"%s\"", key, element.getAsString());
 		}
 
-		return "";
+		return string;
 	}
 }
