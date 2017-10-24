@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -13,14 +14,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by cody on 4/8/17.
  * Handles calls to the Trakt API.
  */
 
-class TraktInteractions extends AsyncTask<String, Void, ArrayList<String>> {
+class TraktInteractions extends AsyncTask<String, Void, ArrayList<StandardMediaObject>> {
 
 	private final static String BASE_PATH = "https://api.trakt.tv/users/guardian1691";
 
@@ -37,8 +37,8 @@ class TraktInteractions extends AsyncTask<String, Void, ArrayList<String>> {
 	}
 
 	@Override
-	protected ArrayList<String> doInBackground(String... params) {
-		ArrayList<String> strings = new ArrayList<>();
+	protected ArrayList<StandardMediaObject> doInBackground(String... params) {
+		ArrayList<StandardMediaObject> objects = new ArrayList<>();
 
 		try {
 			URL url = new URL(params[0]);
@@ -53,66 +53,35 @@ class TraktInteractions extends AsyncTask<String, Void, ArrayList<String>> {
 
 			final String line = reader.readLine();
 
-			if (line != null) strings = readElement(new JsonParser().parse(line));
+			if (line != null) objects = readElement(new JsonParser().parse(line));
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
 
-		return strings;
+		return objects;
 	}
 
 	@Override
-	protected void onPostExecute(ArrayList<String> strings) {
-		super.onPostExecute(strings);
+	protected void onPostExecute(ArrayList<StandardMediaObject> objects) {
+		super.onPostExecute(objects);
 
-		for (String string : strings) {
+		for (StandardMediaObject object : objects) {
 			TextView textView = new TextView(context);
-			textView.setText(string);
+			textView.setText(object.toString());
 
 			linearLayout.addView(textView);
 		}
 	}
 
-	private ArrayList<String> readElement(JsonElement element) {
-		ArrayList<String> strings = new ArrayList<>();
+	private ArrayList<StandardMediaObject> readElement(JsonElement element) {
+		final ArrayList<StandardMediaObject> objects = new ArrayList<>();
 
-		if (element.isJsonObject()) {
-			for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
-				strings.add(String.format("%s\n%s", entry.getKey(), checkType(entry)));
-			}
-		} else if (element.isJsonArray())
-			for (JsonElement innerElement : element.getAsJsonArray()) {
-				strings.addAll(readElement(innerElement));
-			}
+		for (JsonElement e : element.getAsJsonArray()) {
+			final JsonObject object = e.getAsJsonObject();
 
-		return strings;
-	}
-
-	private ArrayList<String> checkType(Map.Entry<String, JsonElement> entry) {
-		ArrayList<String> strings = new ArrayList<>();
-
-		if (entry.getValue().isJsonPrimitive()) {
-			strings.add(checkPrimitiveType(entry.getKey(), entry.getValue()));
-		} else if (entry.getValue().isJsonObject()) {
-			strings.addAll(readElement(entry.getValue()));
-		} else if (entry.getValue().isJsonArray()) {
-			strings.addAll(readElement(entry.getValue()));
+			if (object.has("movie")) objects.add(new Movie(e));
 		}
 
-		return strings;
-	}
-
-	private String checkPrimitiveType(final String key, JsonElement element) {
-		String string = "";
-
-		if (element.getAsJsonPrimitive().isBoolean()) {
-			string = String.format("\"%s\" : %b", key, element.getAsBoolean());
-		} else if (element.getAsJsonPrimitive().isNumber()) {
-			string = String.format("\"%s\" : %s", key, element.getAsNumber().toString());
-		} else if (element.getAsJsonPrimitive().isString()) {
-			string = String.format("\"%s\" : \"%s\"", key, element.getAsString());
-		}
-
-		return string;
+		return objects;
 	}
 }
