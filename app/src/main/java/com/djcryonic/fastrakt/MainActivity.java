@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new TraktInteractions().attempt(linearLayout, context, "");
+				new TraktInteractions().attempt(linearLayout, context, "watched/movies");
 				Snackbar.make(view, "Did the thing.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 			}
 		});
