@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	private LinearLayout linearLayout;
 
+	private String action = "watched/movies";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				new TraktInteractions().attempt(linearLayout, context, "watched/movies");
+				new TraktInteractions().attempt(linearLayout, context, action);
 				Snackbar.make(view, "Did the thing.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 			}
 		});
@@ -95,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		} else if (id == R.id.nav_manage) {
 
 		} else if (id == R.id.nav_movies) {
-			new TraktInteractions().attempt(linearLayout, this, "watched/tv");
+			action = "watched/movies";
 		} else if (id == R.id.nav_tv) {
-			new TraktInteractions().attempt(linearLayout, this, "watched/movies");
+			action = "watched/shows";
 		}
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

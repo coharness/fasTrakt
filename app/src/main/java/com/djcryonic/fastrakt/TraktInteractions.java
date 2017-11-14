@@ -23,15 +23,22 @@ import java.util.ArrayList;
 class TraktInteractions extends AsyncTask<String, Void, ArrayList<StandardMediaObject>> {
 
 	private final static String BASE_PATH = "https://api.trakt.tv/users/guardian1691";
+	private final static String USER_SETTINGS = "User Settings";
+	private final static String API_KEY = "API Key";
 
 	private Context context;
 	private LinearLayout linearLayout;
+
+	private String apiKey = "";
 
 	void attempt(LinearLayout linearLayout, Context context, String action) {
 		this.context = context;
 		this.linearLayout = linearLayout;
 
 		this.linearLayout.removeAllViews();
+
+		// Get the API key from shared preferences.
+		apiKey = context.getSharedPreferences(USER_SETTINGS, Context.MODE_PRIVATE).getString(API_KEY, "");
 
 		execute(String.format("%s/%s", BASE_PATH, action));
 	}
@@ -46,7 +53,7 @@ class TraktInteractions extends AsyncTask<String, Void, ArrayList<StandardMediaO
 
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("trakt-api-key", "185b7215323eb6cfae4c55fed9f6319cbf2d9bdc0d0972b6939c9d30e124e097");
+			connection.setRequestProperty("trakt-api-key", apiKey);
 			connection.setRequestProperty("trakt-api-version", "2");
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -67,7 +74,7 @@ class TraktInteractions extends AsyncTask<String, Void, ArrayList<StandardMediaO
 
 		for (StandardMediaObject object : objects) {
 			TextView textView = new TextView(context);
-			textView.setText(object.toString());
+			textView.setText(object.getTitle());
 
 			linearLayout.addView(textView);
 		}
@@ -80,6 +87,7 @@ class TraktInteractions extends AsyncTask<String, Void, ArrayList<StandardMediaO
 			final JsonObject object = e.getAsJsonObject();
 
 			if (object.has("movie")) objects.add(new Movie(e));
+			if (object.has("show")) objects.add(new Show(e));
 		}
 
 		return objects;
