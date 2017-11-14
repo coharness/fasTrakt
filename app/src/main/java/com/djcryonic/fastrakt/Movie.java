@@ -1,6 +1,7 @@
 package com.djcryonic.fastrakt;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,5 +29,11 @@ public class Movie extends StandardMediaObject {
 
 	Movie(JsonElement element) {
 		super(element);
+
+		final JsonObject movie = element.getAsJsonObject().get("movie").getAsJsonObject();
+
+		title = movie.get("title").getAsString();
+		year = movie.get("year").getAsInt();
+		id = new ID(movie.get("ids").getAsJsonObject());
 	}
 }

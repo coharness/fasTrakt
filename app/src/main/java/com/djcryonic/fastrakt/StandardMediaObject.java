@@ -8,12 +8,11 @@ import com.google.gson.JsonElement;
 
 abstract class StandardMediaObject {
 
-	private String title;
-	private int year;
-	private ID id;
+	String title;
+	int year;
+	ID id;
 
 	StandardMediaObject(JsonElement element) {
-//		Map.Entry<String, JsonElement> entry = element.getAsJsonObject().entrySet();
-//		title = element.getAsJsonObject().getEntrySet()
+
 	}
 }
