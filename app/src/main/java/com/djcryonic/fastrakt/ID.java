@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 public class ID {
 
-	private int trakt;
+	private Integer trakt;
 	private String slug;
 	private int tvdb;
 	private String imdb;
@@ -19,11 +19,11 @@ public class ID {
 	ID(JsonElement element) {
 		final JsonObject ids = element.getAsJsonObject();
 
-		trakt = ids.get("trakt").getAsInt();
-		slug = ids.get("slug").getAsString();
-//		tvdb = ids.get("tvdb").getAsInt();
-		imdb = ids.get("imdb").getAsString();
-		tmdb = ids.get("tmdb").getAsInt();
-//		tvRage = ids.get("tvRage").getAsInt();
+		if (ids.has("trakt")) trakt = ids.get("trakt").getAsInt();
+		if (ids.has("slug")) slug = ids.get("slug").getAsString();
+		if (ids.has("tvdb")) tvdb = ids.get("tvdb").getAsInt();
+		if (ids.has("imdb")) imdb = ids.get("imdb").getAsString();
+		if (ids.has("tmdb")) tmdb = ids.get("tmdb").getAsInt();
+		if (ids.has("tvRage")) tvRage = ids.get("tvRage").getAsInt();
 	}
 }

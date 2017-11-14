@@ -1,7 +1,6 @@
 package com.djcryonic.fastrakt;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,13 +26,21 @@ public class Movie extends StandardMediaObject {
 	private ArrayList<String> genres;
 	private String certification;
 
-	Movie(JsonElement element) {
-		super(element);
+	Movie(JsonElement jsonElement) {
+		super(jsonElement.getAsJsonObject(), "movie");
 
-		final JsonObject movie = element.getAsJsonObject().get("movie").getAsJsonObject();
-
-		title = movie.get("title").getAsString();
-		year = movie.get("year").getAsInt();
-		id = new ID(movie.get("ids").getAsJsonObject());
+		if (mediaObject.has("tagline")) tagline = mediaObject.get("tagline").getAsString();
+		if (mediaObject.has("overview")) overview = mediaObject.get("overview").getAsString();
+//		if (mediaObject.has("released")) released = mediaObject.get("released").getAsDate();
+		if (mediaObject.has("runtime")) runtime = mediaObject.get("runtime").getAsInt();
+//		if (mediaObject.has("trailer")) trailer = mediaObject.get("trailer").getAsURL();
+//		if (mediaObject.has("homepage")) homepage = mediaObject.get("homepage").getAsURL();
+		if (mediaObject.has("rating")) rating = mediaObject.get("rating").getAsDouble();
+		if (mediaObject.has("votes")) votes = mediaObject.get("votes").getAsInt();
+//		if (mediaObject.has("updatedAt")) updatedAt = mediaObject.get("updatedAt").getAsDate();
+		if (mediaObject.has("language")) language = mediaObject.get("language").getAsString();
+//		if (mediaObject.has("availableTranslations")) availableTranslations = mediaObject.get("availableTranslations").getAsJsonObject();
+//		if (mediaObject.has("genres")) genres = mediaObject.get("genres").getAsJsonObject();
+		if (mediaObject.has("certification")) certification = mediaObject.get("certification").getAsString();
 	}
 }
