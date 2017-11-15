@@ -31,13 +31,13 @@ public class Movie extends StandardMediaObject {
 
 		if (mediaObject.has("tagline")) tagline = mediaObject.get("tagline").getAsString();
 		if (mediaObject.has("overview")) overview = mediaObject.get("overview").getAsString();
-//		if (mediaObject.has("released")) released = mediaObject.get("released").getAsDate();
+		if (mediaObject.has("released")) released = getDate("released");
 		if (mediaObject.has("runtime")) runtime = mediaObject.get("runtime").getAsInt();
-//		if (mediaObject.has("trailer")) trailer = mediaObject.get("trailer").getAsURL();
-//		if (mediaObject.has("homepage")) homepage = mediaObject.get("homepage").getAsURL();
+		if (mediaObject.has("trailer")) trailer = getUrl("trailer");
+		if (mediaObject.has("homepage")) homepage = getUrl("homepage");
 		if (mediaObject.has("rating")) rating = mediaObject.get("rating").getAsDouble();
 		if (mediaObject.has("votes")) votes = mediaObject.get("votes").getAsInt();
-//		if (mediaObject.has("updatedAt")) updatedAt = mediaObject.get("updatedAt").getAsDate();
+		if (mediaObject.has("updatedAt")) updatedAt = getDate("updatedAt");
 		if (mediaObject.has("language")) language = mediaObject.get("language").getAsString();
 //		if (mediaObject.has("availableTranslations")) availableTranslations = mediaObject.get("availableTranslations").getAsJsonObject();
 //		if (mediaObject.has("genres")) genres = mediaObject.get("genres").getAsJsonObject();
